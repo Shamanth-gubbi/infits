@@ -1,14 +1,4 @@
-<?php
-// Client Id
-$clientId = 'Eden';
-// Configure Dates
-date_default_timezone_set("Asia/Calcutta");
-$today = new DateTime();
-// Goal Insertion
-if(isset($_POST['savegoal'])){
-    $client = $_POST['clientid'];
-    $goal =$_POST['setgoal'];
-    $conn = new mysqli("localhost", "root", "", "infits");
+<?php  include('config.php');?>
 
     if($conn->connect_error){
         die("Connection failed :" . $conn->connect_error);
@@ -701,93 +691,334 @@ margin-left: 5px;
                 </div>
             </div>
 
-            <div class="tst-left-b">
-                <div class="tab">
-                
-                    <button class="tablinks graph_button_left" onclick="openCity(event, 'London')">Custom Dates</button>
-                    <input id="daterange"  type="date-range">
-                    <i id="daterange-btn" class="drop fa-solid fa-caret-down"></i>
-                   
-                    <button class="tablinks" onclick="openCity(event, 'Year')">Year</button>
-                    <button class="tablinks" onclick="openCity(event, 'Month')">Month</button>
-                    <button class="tablinks graph_button_right" onclick="openCity(event, 'Week')">Week</button>
-                </div>
+                <?php 
+            //weight fragment
+	// $userID = $_POST['userID'];
+	$userID = "Azarudeen";
+	
+	$stmnt = $conn -> prepare("SELECT AVG(weight) FROM weighttracker WHERE WEEKOFYEAR(cast(weighttracker.date as DATE) )=WEEKOFYEAR(NOW()) AND clientid=?");
+	
+	$stmnt-> bind_param("s",$userID);
+	$stmnt-> execute();
+	$stmnt-> bind_result($Sum);
+	
+	$products = array();
+	
+	while($stmnt->fetch()){
+	  $temp = array();
+	  
+	  $temp['SumWeek']= $Sum;
+	   
+	  array_push($products,$temp);
+	}
+
+	$stmnt = $conn -> prepare("SELECT AVG(weight) FROM weighttracker WHERE YEAR(cast(weighttracker.date as DATE)) = YEAR(NOW()) AND MONTH(cast(weighttracker.date as DATE))=MONTH(NOW()) AND clientid=?");
+	
+	$stmnt-> bind_param("s",$userID);
+	$stmnt-> execute();
+	$stmnt-> bind_result($Sum);
+	
+	while($stmnt->fetch()){
+	  $temp = array();
+	  
+	  $temp['SumMonth']= $Sum;
+	   
+	  array_push($products,$temp);
+	}
+
+	$stmnt = $conn -> prepare("SELECT AVG(weight) FROM weighttracker WHERE cast(weighttracker.date as DATE)=CURRENT_DATE AND clientid=?");
+	
+	$stmnt-> bind_param("s",$userID);
+	$stmnt-> execute();
+	$stmnt-> bind_result($Sum);
+	
+	while($stmnt->fetch()){
+	  $temp = array();
+	  
+	  $temp['SumDaily']= $Sum;
+	   
+	  array_push($products,$temp);
+	}
+
+	$stmnt = $conn -> prepare("SELECT AVG(weight) FROM weighttracker WHERE clientid=?");
+	
+	$stmnt-> bind_param("s",$userID);
+	$stmnt-> execute();
+	$stmnt-> bind_result($Sum);
+	
+	while($stmnt->fetch()){
+	  $temp = array();
+	  
+	  $temp['SumTotal']= $Sum;
+	   
+	  array_push($products,$temp);
+	}
+
+    if(count($products)>-1){
+    // echo json_encode($products);
+    }
+
+    else {
+    echo "failure";
+    }
+    $dailyCount = array_column($products, 'SumDaily');
+    $weeklyCount = array_column($products, 'SumWeek');
+    $monthlyCount = array_column($products, 'SumMonth');
+    $totalCount = array_column($products, 'SumTotal');
+    
+
+    //month graph
+        $from = date("Y-m-d", strtotime("first day of this month"));
+    $to = date("Y-m-d", strtotime("last day of this month"));
+
+    // $clientID = $_POST['userID'];
+
+    $sql = "select weight,date from weighttracker where clientID = '$userID' and date between '$from' and '$to';";
+
+    $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
+
+        $emparray = array();
+        while($row =mysqli_fetch_assoc($result))
+        {
+            $emparray['date'] = date("d",strtotime($row['date']));
+            $emparray['weight'] = $row['weight'];
+            $full[] = $emparray;
+        }
+        // echo json_encode(['weight' => $full]);
+        $dateArrM = array_column($full, 'date');
+        $weightArrM = array_column($full, 'weight');
+        
+    
+           for($i=0;$i<count($dateArrM);$i++){
+            // $dateArrM[$i] = $dateArrM[$i]-'0';
+            $weightArrM[$i] = $weightArrM[$i]-'0';
+            }
+
+    //week graph
+    ?>
+                                        <div class="tab">
+                                           <button class="tablinks graph_button_left " onclick="openCity(event, 'London')">Custom Dates</button>
+                                           <button class="tablinks" onclick="openCity(event, 'Year')">Year</button>
+                                           <button class="tablinks" onclick="openCity(event, 'Month')">Month</button>
+                                           <button class="tablinks graph_button_side" class="tab_button_side" onclick="openCity(event, 'Week')">Week</button>
+                                        </div>
                 <div class="graph">
-                    <!-- Tab content -->
-                    <div id="London" class="tab_content">
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-                    <canvas id="myChart"></canvas>
-                    <img class="i-button" src="./images/i-button.svg" alt="">
-                    <div id="london_pop" class="i-pop"></div>
-                    </div>
+                                           
+                                <?php 
+
+                                       //month graph
+                                                                        // if ($_POST['option'] == 'Week') {
+                                        $from = date('Y-m-d', strtotime("-1 week"));
+
+                                        $to = date('Y-m-d');
+
+                                        // $clientID = $_POST['userID'];
+
+                                        $clientID = "Azarudeen";
+
+                                        $sql = "select weight,date from weighttracker where clientID = '$clientID' and date between '$from' and '$to';";
+
+                                        $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
+
+                                            $emparray = array();
+                                            while($row =mysqli_fetch_assoc($result))
+                                            {
+                                                $emparray['weight'] = $row['weight'];
+                                                $emparray['date'] = date("d",strtotime($row['date']));
+                                                $full[] = $emparray;
+                                            }
+                                            // echo json_encode(['weight' => $full]);
+                                        // }
+
+                                        // if ($_POST['option'] == 'Month') {
+                                        
+                                        // }
+                                    $monthlydata = array_column($full, 'weight');
+                                    $monthlydate = array_column($full, 'date');
+                                    for ($i=0; $i < count($monthlydata); $i++) { 
+                                        $monthlydata[$i] = $monthlydata[$i]-'0';
+                                    }
+                                   
+
+                                    //year graph
+                                    function getArr($from,$to){
+                                        $server="localhost";
+                                        $username="root";
+                                        $password="";
+                                        $database = "infits1";  
+                                        
+                                        $conn=mysqli_connect($server,$username,$password,$database);
+                                        
+                                        if ($conn->connect_error) {
+                                          die("Connection failed: " . $conn->connect_error);
+                                        }
+                                            
+                                        $sql = "select weight,date from weighttracker where clientID = 'Azarudeen' and date between '$from' and '$to';";
+                                        
+                                            $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
+                                            
+                                                $emparray = array();
+                                                $mon = array();
+                                                while($row =mysqli_fetch_assoc($result))
+                                                {
+                                                    $emparray['weight'] = $row['weight'];
+                                                    $full[] = $emparray;
+                                                    $mon[] = $row['weight'];
+                                                }
+                                                
+                                                $sig = 0;
+                                                for ($i=0; $i < count($mon) ; $i++) { 
+                                                    $sig = $sig + $mon[$i];
+                                                }
+                                                return $sig/count($mon);
+                                        }
+                                        $from = array("2022-01-01","2022-02-01","2022-03-01","2022-04-01","2022-05-01","2022-06-01","2022-07-01","2022-08-01","2022-09-01","2022-10-01","2022-11-01","2022-12-01");
+                                        $to = array("2022-01-31","2022-02-28","2022-03-31","2022-04-30","2022-05-31","2022-06-30","2022-07-31","2022-08-30","2022-09-31","2022-10-30","2022-11-31","2022-12-30");
+                                        
+                                            $avgArr = array();
+                                            for ($i=0; $i < 12 ; $i++) { 
+                                                $avgArr['av'] = getArr($from[$i],$to[$i]);
+                                                $avgJson[] = $avgArr;
+                                            }
+                                            // echo json_encode($avgJson);
+                                            $yearlydata = array_column($avgJson, 'av');
+                                            for ($i=0; $i < count($yearlydata); $i++) { 
+                                                $yearlydata[$i] = $yearlydata[$i]-'0';
+                                            }
+                                            // echo json_encode($yearlydata);
+
+                                    //week graph
+                                        // if ($_POST['option'] == 'Week') {
+                                    $from = date("Y-m-d", strtotime("first day of this month"));
+                                    $to = date("Y-m-d", strtotime("last day of this month"));
+
+                                    // $clientID = $_POST['userID'];
+
+                                    // $sql = "select weight,date from weighttracker where clientID = '$clientID' and date between '$from' and '$to';";
+
+                                    // $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
+
+                                    //     $emparray = array();
+                                    //     while($row =mysqli_fetch_assoc($result))
+                                    //     {
+                                    //         $emparray['date'] = date("d",strtotime($row['date']));
+                                    //         $emparray['weight'] = $row['weight'];
+                                    //         $full[] = $emparray;
+                                    //     }
+                                    //     echo json_encode(['weight' => $full]);
+                                ?>      
+               
+                                           <!-- Tab content -->
+                                <div id="London" id="defaultOpen"class="tabcontent">
+                                
+                                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+                                <canvas id="myChartwater"></canvas>
+                                </div>
+
+                                <div id="Year" class="tabcontent">
+                                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+                                <canvas id="myChartYearly"></canvas>
+                                </div>
+
+                                <div id="Month" class="tabcontent">
+                                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+                                <canvas id="myChartMonthly"></canvas>
+                                </div>
+                                
+                                <div id="Week" class="tabcontent">
+                                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+                                <canvas id="myChartWeekly"></canvas>
+                                </div>
+                                       <script>
+                                            function openCity(evt, cityName) {
+                                                /* Declare all variables */
+                                                var i, tabcontent, tablinks;
                     
-                    <div id="Year" class="tab_content">
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-                    <canvas id="myChartYearly"></canvas>
-                    <img class="i-button" src="./images/i-button.svg" alt="">
-                    <div id="year_pop" class="i-pop"></div>
-                    </div>
-
-                    <div id="Month" class="tab_content">
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-                    <canvas id="myChartMonthly"></canvas>
-                    <img class="i-button" src="./images/i-button.svg" alt="">
-                    <div id="month_pop" class="i-pop"></div>
-                    </div>
+                                                /* // Get all elements with class="tabcontent" and hide them */
+                                                tabcontent = document.getElementsByClassName("tabcontent");
+                                                for (i = 0; i < tabcontent.length; i++) {
+                                                    tabcontent[i].style.display = "none";
+                                                }
                     
-                    <div id="Week" class="tab_content">
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-                    <canvas id="myChartWeekly"></canvas>
-                    <img class="i-button" src="./images/i-button.svg" alt="">
-                    <div id="week_pop" class="i-pop"></div>
+                                                /* // Get all elements with class="tablinks" and remove the class "active" */
+                                                tablinks = document.getElementsByClassName("tablinks");
+                                                for (i = 0; i < tablinks.length; i++) {
+                                                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                                                }
+                    
+                                                /* // Show the current tab, and add an "active" class to the button that opened the tab */
+                                                document.getElementById(cityName).style.display = "block";
+                                                evt.currentTarget.className += " active";
+                                            }
+                    
+                                            /* // Get the element with id="defaultOpen" and click on it */
+                                            document.getElementById("defaultOpen").click();
+                                       </script> 
+                               </div>
+                </div>
+            </div>
+            <div id="inner2">
+                        <?php
+                        // $userID = $_POST['userID'];
+                        // $date = $_POST['date'];
+                        // $weight = $_POST['weight'];
+                        // $height = $_POST['height'];
+                        // $bmi = $_POST['bmi'];
+                        // $goal = $_POST['goal'];
+                        $userID="Azarudeen";
+                        $date = date('Y-m-d', strtotime('1 days'));
+                        $weight = 70;
+                        $height = 170;
+                        $bmi = 24;
+                        
+                        // $goal = $_POST["weightgoal"];
+                        $goal = 60;
+                        $sql = "select weight from weighttracker where clientID='$userID' and date = '$date'";
+                        
+                        $result = mysqli_query($conn, $sql);
+                        
+                        if(mysqli_num_rows($result) == 0){
+                        $sql = "insert into weighttracker values('$date',$height,$weight,$bmi,$goal,'$userID')";
+                        if (mysqli_query($conn,$sql)) {
+                            $sql = "update client set height='$height',weight = '$weight' where clientuserID = '$userID'";
+                            mysqli_query($conn,$sql);
+                            echo "updated";
+                        }
+                        else{
+                            echo "error";
+                        }
+                        }
+                        else{
+                            $sql = "update weighttracker set height='$height',weight = '$weight',goal = '$goal',bmi = '$bmi' where date = '$date' and clientID = '$userID'";
+                            if (mysqli_query($conn,$sql)) {
+                                $sql = "update client set height='$height',weight = '$weight' where clientuserID = '$userID'";
+                                mysqli_query($conn,$sql);
+                                echo "updated";
+                            }
+                            else{
+                                echo "error";
+                            }   
+                        }
+                        ?>
+                <div class="inner21">
+                    <div class="inner21-title">
+                        Set Goals
                     </div>
-                
-                    <script>
-                    function openCity(evt, cityName) {
-                    /* Declare all variables */
-                    var i, tab_content, tablinks;
-
-                    /* // Get all elements with class="tab_content" and hide them */
-                    tab_content = document.getElementsByClassName("tab_content");
-                    for (i = 0; i < tab_content.length; i++) {
-                        tab_content[i].style.display = "none";
-                    }
-
-                    /* // Get all elements with class="tablinks" and remove the class "active" */
-                    tablinks = document.getElementsByClassName("tablinks");
-                    for (i = 0; i < tablinks.length; i++) {
-                        tablinks[i].className = tablinks[i].className.replace(" active", "");
-                    }
-
-                    /* // Show the current tab, and add an "active" class to the button that opened the tab */
-                    document.getElementById(cityName).style.display = "block";
-                    evt.currentTarget.className += " active";
-                    }
-
-                    /* // Get the element with id="defaultOpen" and click on it */
-                    document.getElementsByClassName('graph_button_right')[0].click();
-                    // document.getElementById("London").style.display = "block";
-                    </script> 
+                    <div class="inner21-image">
+                        <img src="images/obesity.svg" alt="">
+                    </div>
+                    <div class="box-title">Daily Steps</div>
+                    <form action="">
+                    <div class="box-counter">
+                    Goal:<input type="number" id="setgoalweight" name="weightgoal">
+                    </div>
+                    <buttpn class="box-btn"><input type="submit" name="submit" value="Submit"></buttpn>
+                    </form>
+                    
+                    
                 </div>
-            </div>           
-        </div>
-        <div class="col-lg-4 tst-right">
-            <div class="set-goal">
-                <div class="heading">
-                    <p>Set Goals</p>
-                    <span>Daily Weight Count</span>
-                    <span id="g-set-success"></span>
-                </div>
-                <img src="images/obesity.svg" alt="">
-                <form action="<?php $_SERVER['PHP_SELF'] ?>" method="POST">
-                    <input name="setgoal" required min="1" type="number" id="set-goal" placeholder="00000 BPM">
-                    <input name="clientid"  type="hidden" value="<?php echo($clientId) ?>">
-                    <button type="submit" name="savegoal" id="save-goal">Set</button>
-                </form>
             </div>
         </div>
-    </div>
-<?php 
 
 
 $allDataSum = fetchDataSql($clientId, '', $today->format('Y-m-d'), 1)[0]['avg(weight)'];
@@ -804,234 +1035,193 @@ $monthAvg = fetchDataSql($clientId,$pastMonth->format('Y-m-d'), $today->format('
             <div class="tsd-left-t">
                 <div class="stats-btn-container">
                     
-                    <div class="stat-btn">
-                        <div class="stat-data">
-                            <span class="title">Daily Count</span>
-                            <span id="daily-count" class="value"><?php echo(ceil($todayData)) ?></span><span class="unit">Kgs</span>
-                        </div>
-                    </div>
-                    <div class="stat-btn">
-                        <div class="stat-data">
-                            <span class="title">Weekly Avg</span>
-                            <span id="weekly-avg" class="value"><?php echo(ceil($weekAvg)) ?></span><span class="unit">Kgs</span>
-                        </div>
-                    </div>
-                    <div class="stat-btn">
-                        <div class="stat-data">
-                            <span class="title">Monthly Avg</span>
-                            <span id="monthly-avg" class="value"><?php echo(ceil($monthAvg)) ?></span><span class="unit">Kgs</span>
-                        </div>
-                    </div>
-                    <div class="stat-btn">
-                        <div class="stat-data">
-                            <span class="title">Total</span>
-                            <span id="total" class="value"><?php echo(ceil($allDataSum)) ?></span><span class="unit">Kgs</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-<?php
-$pastActivityData = fetchDataSql($clientId,$today->format('Y-m-d'),$today->format('Y-m-d'),5);
-$k = 0;
-$j = count($pastActivityData);
-?>
-            <div class="tsd-left-b table-activity">
-                <div class="heading">
-                    <p>Past Activity</p>
-                    <a href="past_activities_weight.php"><span>View All</span></a>
-                </div>
-                <div class="heading-border"></div>
-                <div class="activity-container">
-<?php 
-while($k<$j){
-    $date = new DateTime($pastActivityData[$k]['date']);
-?>
-                    <div class="activity-box">
-                        <div class="activity-date">
-                            <span class="up"><?php echo ($date->format('D')) ?></span>
-                            <span class="down"><?php echo ($date->format('d')) ?></span>
-                        </div>
-                        <div class="activity-border"></div>
-                        <div class="activity-data">
-                            <span class="up"><?php echo (ucwords($pastActivityData[$k]['weight'])) ?></span>
-                            <span class="down"><?php echo ($pastActivityData[$k]['bmi']) ?> BMI</span>
-                        </div>
-                        <div class="activity-time">
-                            <span><?php echo ($date->format('h:i A')) ?></span>
-                        </div>
-                    </div>
-<?php $k++; } ?>
+                <div class="flex-container-bottom">
+                            <div class="bottom-stats-btn">
+                                <div class="heart_info">
+                                    <span>Daily Count</span>
+                                    <span><span><?php echo json_encode((int) $dailyCount[0]-'0');?></span> Kgs</span>
+                                </div>
+                                
+                            </div>
 
+                            <div class="bottom-stats-btn">
+                                <div class="heart_info">
+                                    <span>Weekly Avg</span>
+                                    <span><span><?php echo json_encode((int) $weeklyCount[0]-'0');?></span> Kgs</span>
+                                </div>
+                                
+                            </div>
+                    
+                      
+                      
+                            <div class="bottom-stats-btn">
+                                <div class="heart_info">
+                                <span>Monthly Avg</span>
+                                <span><span><?php echo json_encode((int) $monthlyCount[0]-'0');?></span> Kgs</span>
+                                </div>
+                                
+                            </div>
+
+                            <div class="bottom-stats-btn">
+                                <div class="heart_info">
+                                <span>Total</span>
+                                <span><span><?php echo json_encode((int) $totalCount[0]-'0');?></span> Kgs</span>
+                                </div>
+                               
+                            </div>
+                    </div>
+                           
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                    <div class="table">
+                        <div class="table_top">
+                     <span>Past Activity</span>
+                      </div>
+                     <?php
+                     $a=1;
+                     
+                    while ($a <= 4) {
+                        
+                     echo ' <div class="table_element">';
+                     echo '<div class="date">';
+                     echo '<span>Sep</span>';
+                     echo ' <p>18</p>';
+                     echo '</div>';
+                     echo '<div class="table_activity">';
+                     echo '<span>Sep</span>';
+                     echo '<p>18</p>';
+                     echo ' </div>';
+                     echo '<div class="table_time">';
+                     echo '   <span>9:10 AM</span>';
+                     echo ' </div>';
+                     echo '</div>';
+                     
+                     $a++;
+                    }
+                     
+                    
+                     ?>
+                      </div> 
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                    <div class="pheader">
+						<h4>Daily Progress</h4>
+						<p>View Activity</p>
+					</div>
+                <div class="cpb">
+                    <div role="progressbar" style="--value:<?php $value = 50; echo $value; ?>"></div>
+                </div>
+                <div class="cpb_bottom">
+                        <div class="cpb_bottom_header">Your Progress</div>
+                        <div class="cpb_bottom_content">
+                            <div class="weight_today">
+                                <span>Progress Today</span>
+                                <span>19-07-2022</span>
+                                <h4>-.07 kg</h4>
+                            </div>
+                            <div class="weight_week_ago">
+                                <div class="weight_today">
+                                    <span>Progress Today</span>
+                                    <span>19-07-2022</span>
+                                    <h4>-.07 kg</h4>
+                                </div>
+                            </div>
+                        </div>
+            <div class="activity_pop">
+                
+                <?php
+                   
+                ?>
+                <img src="images/exit.svg" alt="">
+                    <div class="pop_header">
+                        <span>Activity</span>
+                    </div>
+                    <div class="pop_box">
+                       <img src="images/man_running.svg" alt="">
+                        <div class="pop_box_info">
+                            <span>Running</span>
+                            <p> m</p>
+                        </div>
+                        <div class="pop_box_info">
+                        <span>Running</span>
+                            <p>m</p>
+                        </div>
+                    </div>
+                    <div class="pop_box">
+                    <img src="images/man_running.svg" alt="">
+                        <div class="pop_box_info">
+                            <span>Running</span>
+                            <p> m</p>
+                        </div>
+                        <div class="pop_box_info">
+                        <span>Running</span>
+                            <p> m</p>
+                        </div>
+                    </div>
+                    <div class="pop_box">
+                    <img src="images/man_running.svg" alt="">
+                        <div class="pop_box_info">
+                            <span>Running</span>
+                            <p> m</p>
+                        </div>
+                        <div class="pop_box_info">
+                        <span>Running</span>
+                            <p> m</p>
+                        </div>
+                    </div>
+                    <div class="pop_box">
+                    <img src="images/man_running.svg" alt="">
+                        <div class="pop_box_info">
+                            <span>Running</span>
+                            <p>m</p>
+                        </div>
+                        <div class="pop_box_info">
+                        <span>Running</span>
+                            <p>9075 m</p>
+                        </div>
+                    </div>
+                    <div class="pop_box">
+                    <img src="images/man_running.svg" alt="">
+                        <div class="pop_box_info">
+                            <span>Running</span>
+                            <pm</p>
+                        </div>
+                        <div class="pop_box_info">
+                        <span>Running</span>
+                            <p>9075 m</p>
+                        </div>
+                    </div>
+                    <div class="pop_box">
+                    <img src="images/man_running.svg" alt="">
+                        <div class="pop_box_info">
+                            <span>Running</span>
+                            <p> m</p>
+                        </div>
+                        <div class="pop_box_info">
+                        <span>Running</span>
+                            <p>9075 m</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-<?php
-$progressBarData = fetchDataSql($clientId, "", $today->format('Y-m-d'), 2);
-?>     
-        <div class="col-lg-4 tsd-right">
-            <div class="heading">
-                <p>Daily Progress</p>
-                <a href="past_activities_weight.php"><span>View Activity</span></a>
-            </div>
-            <div class="progress-bar-container">
-                <div id="progress-percent" class="progress-circle">
-                    <div class="progress-circle-fill">
-                        <div class="progress-circle-value"><span id="progress-percent"><?php echo($progressBarData[0]['avg(weight)']) ?> Kg</span><span>New Weight</span></div>
-                    </div>
-                </div>
-            </div>
-            <?php
-            $yesterday_date = new DateTime();
-            $lastweek_date = new DateTime();
-            $yesterday_date->modify('-1 day');
-            $lastweek_date->modify('-1 week');
-            $yesterday_data =  fetchDataSql($clientId, "", $yesterday_date->format('Y-m-d'),2)[0]['avg(weight)'];
-            $pastweek_data =  fetchDataSql($clientId, "", $lastweek_date->format('Y-m-d'),2)[0]['avg(weight)'];
-            ?>
-            <div class="progress-box">
-                <p><img src="images/bar-graph.svg" alt=""> Your Progress</p>
-                <div class="progress-details">
-                    <div class="progress-div">
-                        <p>Progress Today</p>
-                        <p><?php echo($today->format('d.m.Y')) ?></p>
-                        <span><?php echo($yesterday_data - $progressBarData[0]['avg(weight)']) ?></span>
-                    </div>
-                    <div class="activity-border"></div>
-                    <div class="progress-div">
-                        <p>Comprared with</p>
-                        <p>1 week ago</p>
-                        <span><?php echo($pastweek_data - $progressBarData[0]['avg(weight)']) ?></span>
-                    </div>
-                </div>
-            </div>
+           
         </div>
-<script>
-    const progressPercent = document.getElementById('progress-percent');
-    progressPercent.style.setProperty("background", "conic-gradient(#D7EDEC <?php echo(100 - $progressBarData[0]['avg(weight)']) ?>% , #87A9AC 0)");
-</script>
     </div>
-</div>
-<?php
-// To Get - Yearly data
-$year_pop = 0;
-$wholeYearData = array(
-    'value' => array(),
-    'month' => array()
-);
-$yearly_month = new DateTime();
-$yearly_last_month = new DateTime();
-$yearly_month->setDate($yearly_month->format('Y'),01,01);
-if($today->format('m') == '01'){
-    $yearly_month->setDate($yearly_month->format('Y')-1,01,01);
-    $yearly_last_month->setDate($yearly_last_month->format('Y')-1,12,31);
-    $year_pop = 1;
-}
-while($yearly_last_month >= $yearly_month){
-    
-    $yearly_Month_1 = $yearly_month->format('Y-m')."-"."01";
-    $yearly_Month_2 =  $yearly_month->format('Y-m')."-". $yearly_month->format('t');
-    $yearly_Data = (int) fetchDataSql($clientId, $yearly_Month_1, $yearly_Month_2,3)[0]['avg(weight)'];
-
-    array_push($wholeYearData['value'], $yearly_Data);
-    array_push($wholeYearData['month'], $yearly_month->format('M'));
-    $yearly_month->modify('+1 month');
-}
-$month_pop = 0;
-$wholeMonthData = array(
-    'value' => array(),
-    'date' => array(),
-);
-$monthly_Month = new DateTime();
-$monthly_LastDay = new DateTime();
-$monthly_Month->modify("first day of this month");
-
-if($today->format('d') == '01'){
-    $monthly_Month->modify("first day of previous month");
-    $monthly_LastDay->modify("last day of previous month");
-    $month_pop = 1;
-}
-while ($monthly_LastDay >= $monthly_Month) {
-    $monthly_Data = (int) fetchDataSql($clientId,$monthly_Month->format('Y-m-d'), $monthly_Month->format('Y-m-d'),2)[0]['avg(weight)'];
-
-    array_push($wholeMonthData['value'],$monthly_Data);
-    array_push($wholeMonthData['date'], $monthly_Month->format('d'));
-    $monthly_Month->modify("+1 day");
-    
-}
-// To Get - Weekly Data
-$week_pop = 0;
-$wholeWeekData = array(
-    'value' => array(),
-    'day' => array(),
-);
-$weekly_Day = new DateTime();
-$weekly_Day->modify('previous monday');
-$weekly_lastDay =new DateTime();
-
-if($today->format('l')== "Monday"){
-    $weekly_lastDay->modify('previous sunday');
-    $week_pop = 1;
-}
-
-while($weekly_Day <= $weekly_lastDay){
-    $weekly_Data = fetchDataSql($clientId, $weekly_Day->format('Y-m-d'), $weekly_Day->format('Y-m-d'),2);
-
-    array_push($wholeWeekData['value'], (int) $weekly_Data[0]['avg(weight)']);
-    array_push($wholeWeekData['day'], $weekly_Day->format('D'));
-    $weekly_Day->modify("+1 day");
-}
-?>
+</body>
 <script>
-// For Pop UP
-const london_pop = document.getElementById('london_pop');
-const year_pop = document.getElementById('year_pop');
-const month_pop = document.getElementById('month_pop');
-const week_pop = document.getElementById('week_pop');
-const i_buttons = document.getElementsByClassName('i-button');
-const i_pop = document.getElementsByClassName('i-pop');
-
-if(<?php echo($year_pop) ?>){
-    year_pop.innerText = "As it is fresh year, we are showing you the previous year's data until the latest data is synced for this month!";
-    london_pop.innerText = "As it is fresh year, we are showing you the previous year's data until the latest data is synced for this month!";
-}else{
-    year_pop.innerText = "We are showing you the ongoing year's data and it keeps updating realtime!";
-    london_pop.innerText = "We are showing you the ongoing year's data and it keeps updating realtime!";
-}
-
-if(<?php echo($month_pop) ?>){
-    month_pop.innerText = "As it is fresh month, we are showing you the previous month's data until the latest data is synced for this month!";
-}else{
-    month_pop.innerText = "We are showing you the ongoing month's data and it keeps updating realtime!";
-}
-
-if(<?php echo($week_pop) ?>){
-    week_pop.innerText = "As it is fresh year, we are showing you the previous week's data until the latest data is synced for the week!";
-}else{
-    week_pop.innerText = "We are showing you the ongoing week's data and it keeps updating realtime!";
-}
-
-
-for(let i =0; i<i_buttons.length; i++){
-    i_buttons[i].addEventListener('mouseover',()=>{
-        i_pop[i].style.display = "Block";
-    });
-    i_buttons[i].addEventListener('mouseout',()=>{
-        i_pop[i].style.display = "none";
-    });
-}
-// --------------Charts--------------
-// Default Chart (Function)
-const defaultChart = document.getElementById('myChart');
-function CustomChart_Data(from_date,to_date){
-    window.customChart.destroy();
-    $.ajax({
-        type: "POST",
-        url: "track_stats_weight.php",
-        data: {from_date: from_date, to_date: to_date},
-        success: function(result) {
-        london_pop.innerHTML = "We are showing you the data in range <br>"+ result['range'] +" !";
-        window.customChart = new Chart(defaultChart, {
-                                type: 'line',
+ var xValues = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];  
+ var yValues = [1000, 2000, 3000, 5000, 2000, 5000, 6000];
+ var xValuesM = [<?php echo '"'.implode('","',  $monthlydate ).'"' ?>];
+var yValuesM = [<?php echo '"'.implode('","',  $monthlydata ).'"' ?>];
+var xValuesY = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var yValuesY = [<?php echo '"'.implode('","',  $yearlydata ).'"' ?>];
+                    new Chart("myChartwater", {
+                                type: "line",
                                 data: {
                                 labels: result['date'],
                                 datasets: [{
