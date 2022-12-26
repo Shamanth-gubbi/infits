@@ -1,4 +1,4 @@
-<?php  include('config.php');?>
+<?php include('config.php'); ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -727,111 +727,108 @@ height: 45px;
                 </div>
                 <div id="inner12">
 
-                <?php 
-            //weight fragment
-	// $userID = $_POST['userID'];
-	$userID = "Azarudeen";
-	
-	$stmnt = $conn -> prepare("SELECT AVG(weight) FROM weighttracker WHERE WEEKOFYEAR(cast(weighttracker.date as DATE) )=WEEKOFYEAR(NOW()) AND clientid=?");
-	
-	$stmnt-> bind_param("s",$userID);
-	$stmnt-> execute();
-	$stmnt-> bind_result($Sum);
-	
-	$products = array();
-	
-	while($stmnt->fetch()){
-	  $temp = array();
-	  
-	  $temp['SumWeek']= $Sum;
-	   
-	  array_push($products,$temp);
-	}
+                <?php
+                //weight fragment
+                // $userID = $_POST['userID'];
+                $userID = "Azarudeen";
 
-	$stmnt = $conn -> prepare("SELECT AVG(weight) FROM weighttracker WHERE YEAR(cast(weighttracker.date as DATE)) = YEAR(NOW()) AND MONTH(cast(weighttracker.date as DATE))=MONTH(NOW()) AND clientid=?");
-	
-	$stmnt-> bind_param("s",$userID);
-	$stmnt-> execute();
-	$stmnt-> bind_result($Sum);
-	
-	while($stmnt->fetch()){
-	  $temp = array();
-	  
-	  $temp['SumMonth']= $Sum;
-	   
-	  array_push($products,$temp);
-	}
+                $stmnt = $conn->prepare("SELECT AVG(weight) FROM weighttracker WHERE WEEKOFYEAR(cast(weighttracker.date as DATE) )=WEEKOFYEAR(NOW()) AND clientid=?");
 
-	$stmnt = $conn -> prepare("SELECT AVG(weight) FROM weighttracker WHERE cast(weighttracker.date as DATE)=CURRENT_DATE AND clientid=?");
-	
-	$stmnt-> bind_param("s",$userID);
-	$stmnt-> execute();
-	$stmnt-> bind_result($Sum);
-	
-	while($stmnt->fetch()){
-	  $temp = array();
-	  
-	  $temp['SumDaily']= $Sum;
-	   
-	  array_push($products,$temp);
-	}
+                $stmnt->bind_param("s", $userID);
+                $stmnt->execute();
+                $stmnt->bind_result($Sum);
 
-	$stmnt = $conn -> prepare("SELECT AVG(weight) FROM weighttracker WHERE clientid=?");
-	
-	$stmnt-> bind_param("s",$userID);
-	$stmnt-> execute();
-	$stmnt-> bind_result($Sum);
-	
-	while($stmnt->fetch()){
-	  $temp = array();
-	  
-	  $temp['SumTotal']= $Sum;
-	   
-	  array_push($products,$temp);
-	}
+                $products = array();
 
-    if(count($products)>-1){
-    // echo json_encode($products);
-    }
+                while ($stmnt->fetch()) {
+                    $temp = array();
 
-    else {
-    echo "failure";
-    }
-    $dailyCount = array_column($products, 'SumDaily');
-    $weeklyCount = array_column($products, 'SumWeek');
-    $monthlyCount = array_column($products, 'SumMonth');
-    $totalCount = array_column($products, 'SumTotal');
-    
+                    $temp['SumWeek'] = $Sum;
 
-    //month graph
-        $from = date("Y-m-d", strtotime("first day of this month"));
-    $to = date("Y-m-d", strtotime("last day of this month"));
+                    array_push($products, $temp);
+                }
 
-    // $clientID = $_POST['userID'];
+                $stmnt = $conn->prepare("SELECT AVG(weight) FROM weighttracker WHERE YEAR(cast(weighttracker.date as DATE)) = YEAR(NOW()) AND MONTH(cast(weighttracker.date as DATE))=MONTH(NOW()) AND clientid=?");
 
-    $sql = "select weight,date from weighttracker where clientID = '$userID' and date between '$from' and '$to';";
+                $stmnt->bind_param("s", $userID);
+                $stmnt->execute();
+                $stmnt->bind_result($Sum);
 
-    $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
+                while ($stmnt->fetch()) {
+                    $temp = array();
 
-        $emparray = array();
-        while($row =mysqli_fetch_assoc($result))
-        {
-            $emparray['date'] = date("d",strtotime($row['date']));
-            $emparray['weight'] = $row['weight'];
-            $full[] = $emparray;
-        }
-        // echo json_encode(['weight' => $full]);
-        $dateArrM = array_column($full, 'date');
-        $weightArrM = array_column($full, 'weight');
-        
-    
-           for($i=0;$i<count($dateArrM);$i++){
-            // $dateArrM[$i] = $dateArrM[$i]-'0';
-            $weightArrM[$i] = $weightArrM[$i]-'0';
-            }
+                    $temp['SumMonth'] = $Sum;
 
-    //week graph
-    ?>
+                    array_push($products, $temp);
+                }
+
+                $stmnt = $conn->prepare("SELECT AVG(weight) FROM weighttracker WHERE cast(weighttracker.date as DATE)=CURRENT_DATE AND clientid=?");
+
+                $stmnt->bind_param("s", $userID);
+                $stmnt->execute();
+                $stmnt->bind_result($Sum);
+
+                while ($stmnt->fetch()) {
+                    $temp = array();
+
+                    $temp['SumDaily'] = $Sum;
+
+                    array_push($products, $temp);
+                }
+
+                $stmnt = $conn->prepare("SELECT AVG(weight) FROM weighttracker WHERE clientid=?");
+
+                $stmnt->bind_param("s", $userID);
+                $stmnt->execute();
+                $stmnt->bind_result($Sum);
+
+                while ($stmnt->fetch()) {
+                    $temp = array();
+
+                    $temp['SumTotal'] = $Sum;
+
+                    array_push($products, $temp);
+                }
+
+                if (count($products) > -1) {
+                    // echo json_encode($products);
+                } else {
+                    echo "failure";
+                }
+                $dailyCount = array_column($products, 'SumDaily');
+                $weeklyCount = array_column($products, 'SumWeek');
+                $monthlyCount = array_column($products, 'SumMonth');
+                $totalCount = array_column($products, 'SumTotal');
+
+
+                //month graph
+                $from = date("Y-m-d", strtotime("first day of this month"));
+                $to = date("Y-m-d", strtotime("last day of this month"));
+
+                // $clientID = $_POST['userID'];
+                
+                $sql = "select weight,date from weighttracker where clientID = '$userID' and date between '$from' and '$to';";
+
+                $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
+
+                $emparray = array();
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $emparray['date'] = date("d", strtotime($row['date']));
+                    $emparray['weight'] = $row['weight'];
+                    $full[] = $emparray;
+                }
+                // echo json_encode(['weight' => $full]);
+                $dateArrM = array_column($full, 'date');
+                $weightArrM = array_column($full, 'weight');
+
+
+                for ($i = 0; $i < count($dateArrM); $i++) {
+                    // $dateArrM[$i] = $dateArrM[$i]-'0';
+                    $weightArrM[$i] = $weightArrM[$i] - '0';
+                }
+
+                //week graph
+                ?>
                                         <div class="tab">
                                            <button class="tablinks graph_button_left " onclick="openCity(event, 'London')">Custom Dates</button>
                                            <button class="tablinks" onclick="openCity(event, 'Year')">Year</button>
@@ -840,108 +837,107 @@ height: 45px;
                                         </div>
                 <div class="graph">
                                            
-                                <?php 
+                                <?php
 
-                                       //month graph
-                                                                        // if ($_POST['option'] == 'Week') {
-                                        $from = date('Y-m-d', strtotime("-1 week"));
+                                //month graph
+                                // if ($_POST['option'] == 'Week') {
+                                $from = date('Y-m-d', strtotime("-1 week"));
 
-                                        $to = date('Y-m-d');
+                                $to = date('Y-m-d');
 
-                                        // $clientID = $_POST['userID'];
+                                // $clientID = $_POST['userID'];
+                                
+                                $clientID = "Azarudeen";
 
-                                        $clientID = "Azarudeen";
+                                $sql = "select weight,date from weighttracker where clientID = '$clientID' and date between '$from' and '$to';";
 
-                                        $sql = "select weight,date from weighttracker where clientID = '$clientID' and date between '$from' and '$to';";
+                                $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
 
-                                        $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
+                                $emparray = array();
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    $emparray['weight'] = $row['weight'];
+                                    $emparray['date'] = date("d", strtotime($row['date']));
+                                    $full[] = $emparray;
+                                }
+                                // echo json_encode(['weight' => $full]);
+                                // }
+                                
+                                // if ($_POST['option'] == 'Month') {
+                                
+                                // }
+                                $monthlydata = array_column($full, 'weight');
+                                $monthlydate = array_column($full, 'date');
+                                for ($i = 0; $i < count($monthlydata); $i++) {
+                                    $monthlydata[$i] = $monthlydata[$i] - '0';
+                                }
 
-                                            $emparray = array();
-                                            while($row =mysqli_fetch_assoc($result))
-                                            {
-                                                $emparray['weight'] = $row['weight'];
-                                                $emparray['date'] = date("d",strtotime($row['date']));
-                                                $full[] = $emparray;
-                                            }
-                                            // echo json_encode(['weight' => $full]);
-                                        // }
 
-                                        // if ($_POST['option'] == 'Month') {
-                                        
-                                        // }
-                                    $monthlydata = array_column($full, 'weight');
-                                    $monthlydate = array_column($full, 'date');
-                                    for ($i=0; $i < count($monthlydata); $i++) { 
-                                        $monthlydata[$i] = $monthlydata[$i]-'0';
+                                //year graph
+                                function getArr($from, $to)
+                                {
+                                    $server = "localhost";
+                                    $username = "root";
+                                    $password = "";
+                                    $database = "infits1";
+
+                                    $conn = mysqli_connect($server, $username, $password, $database);
+
+                                    if ($conn->connect_error) {
+                                        die("Connection failed: " . $conn->connect_error);
                                     }
-                                   
 
-                                    //year graph
-                                    function getArr($from,$to){
-                                        $server="localhost";
-                                        $username="root";
-                                        $password="";
-                                        $database = "infits1";  
-                                        
-                                        $conn=mysqli_connect($server,$username,$password,$database);
-                                        
-                                        if ($conn->connect_error) {
-                                          die("Connection failed: " . $conn->connect_error);
-                                        }
-                                            
-                                        $sql = "select weight,date from weighttracker where clientID = 'Azarudeen' and date between '$from' and '$to';";
-                                        
-                                            $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
-                                            
-                                                $emparray = array();
-                                                $mon = array();
-                                                while($row =mysqli_fetch_assoc($result))
-                                                {
-                                                    $emparray['weight'] = $row['weight'];
-                                                    $full[] = $emparray;
-                                                    $mon[] = $row['weight'];
-                                                }
-                                                
-                                                $sig = 0;
-                                                for ($i=0; $i < count($mon) ; $i++) { 
-                                                    $sig = $sig + $mon[$i];
-                                                }
-                                                return $sig/count($mon);
-                                        }
-                                        $from = array("2022-01-01","2022-02-01","2022-03-01","2022-04-01","2022-05-01","2022-06-01","2022-07-01","2022-08-01","2022-09-01","2022-10-01","2022-11-01","2022-12-01");
-                                        $to = array("2022-01-31","2022-02-28","2022-03-31","2022-04-30","2022-05-31","2022-06-30","2022-07-31","2022-08-30","2022-09-31","2022-10-30","2022-11-31","2022-12-30");
-                                        
-                                            $avgArr = array();
-                                            for ($i=0; $i < 12 ; $i++) { 
-                                                $avgArr['av'] = getArr($from[$i],$to[$i]);
-                                                $avgJson[] = $avgArr;
-                                            }
-                                            // echo json_encode($avgJson);
-                                            $yearlydata = array_column($avgJson, 'av');
-                                            for ($i=0; $i < count($yearlydata); $i++) { 
-                                                $yearlydata[$i] = $yearlydata[$i]-'0';
-                                            }
-                                            // echo json_encode($yearlydata);
+                                    $sql = "select weight,date from weighttracker where clientID = 'Azarudeen' and date between '$from' and '$to';";
 
-                                    //week graph
-                                        // if ($_POST['option'] == 'Week') {
-                                    $from = date("Y-m-d", strtotime("first day of this month"));
-                                    $to = date("Y-m-d", strtotime("last day of this month"));
+                                    $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
 
-                                    // $clientID = $_POST['userID'];
+                                    $emparray = array();
+                                    $mon = array();
+                                    while ($row = mysqli_fetch_assoc($result)) {
+                                        $emparray['weight'] = $row['weight'];
+                                        $full[] = $emparray;
+                                        $mon[] = $row['weight'];
+                                    }
 
-                                    // $sql = "select weight,date from weighttracker where clientID = '$clientID' and date between '$from' and '$to';";
+                                    $sig = 0;
+                                    for ($i = 0; $i < count($mon); $i++) {
+                                        $sig = $sig + $mon[$i];
+                                    }
+                                    return $sig / count($mon);
+                                }
+                                $from = array("2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01");
+                                $to = array("2022-01-31", "2022-02-28", "2022-03-31", "2022-04-30", "2022-05-31", "2022-06-30", "2022-07-31", "2022-08-30", "2022-09-31", "2022-10-30", "2022-11-31", "2022-12-30");
 
-                                    // $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
+                                $avgArr = array();
+                                for ($i = 0; $i < 12; $i++) {
+                                    $avgArr['av'] = getArr($from[$i], $to[$i]);
+                                    $avgJson[] = $avgArr;
+                                }
+                                // echo json_encode($avgJson);
+                                $yearlydata = array_column($avgJson, 'av');
+                                for ($i = 0; $i < count($yearlydata); $i++) {
+                                    $yearlydata[$i] = $yearlydata[$i] - '0';
+                                }
+                                // echo json_encode($yearlydata);
+                                
+                                //week graph
+                                // if ($_POST['option'] == 'Week') {
+                                $from = date("Y-m-d", strtotime("first day of this month"));
+                                $to = date("Y-m-d", strtotime("last day of this month"));
 
-                                    //     $emparray = array();
-                                    //     while($row =mysqli_fetch_assoc($result))
-                                    //     {
-                                    //         $emparray['date'] = date("d",strtotime($row['date']));
-                                    //         $emparray['weight'] = $row['weight'];
-                                    //         $full[] = $emparray;
-                                    //     }
-                                    //     echo json_encode(['weight' => $full]);
+                                // $clientID = $_POST['userID'];
+                                
+                                // $sql = "select weight,date from weighttracker where clientID = '$clientID' and date between '$from' and '$to';";
+                                
+                                // $result = mysqli_query($conn, $sql) or die("Error in Selecting " . mysqli_error($connection));
+                                
+                                //     $emparray = array();
+                                //     while($row =mysqli_fetch_assoc($result))
+                                //     {
+                                //         $emparray['date'] = date("d",strtotime($row['date']));
+                                //         $emparray['weight'] = $row['weight'];
+                                //         $full[] = $emparray;
+                                //     }
+                                //     echo json_encode(['weight' => $full]);
                                 ?>      
                
                                            <!-- Tab content -->
@@ -1001,39 +997,36 @@ height: 45px;
                         // $height = $_POST['height'];
                         // $bmi = $_POST['bmi'];
                         // $goal = $_POST['goal'];
-                        $userID="Azarudeen";
+                        $userID = "Azarudeen";
                         $date = date('Y-m-d', strtotime('1 days'));
                         $weight = 70;
                         $height = 170;
                         $bmi = 24;
-                        
+
                         // $goal = $_POST["weightgoal"];
                         $goal = 60;
                         $sql = "select weight from weighttracker where clientID='$userID' and date = '$date'";
-                        
+
                         $result = mysqli_query($conn, $sql);
-                        
-                        if(mysqli_num_rows($result) == 0){
-                        $sql = "insert into weighttracker values('$date',$height,$weight,$bmi,$goal,'$userID')";
-                        if (mysqli_query($conn,$sql)) {
-                            $sql = "update client set height='$height',weight = '$weight' where clientuserID = '$userID'";
-                            mysqli_query($conn,$sql);
-                            echo "updated";
-                        }
-                        else{
-                            echo "error";
-                        }
-                        }
-                        else{
-                            $sql = "update weighttracker set height='$height',weight = '$weight',goal = '$goal',bmi = '$bmi' where date = '$date' and clientID = '$userID'";
-                            if (mysqli_query($conn,$sql)) {
+
+                        if (mysqli_num_rows($result) == 0) {
+                            $sql = "insert into weighttracker values('$date',$height,$weight,$bmi,$goal,'$userID')";
+                            if (mysqli_query($conn, $sql)) {
                                 $sql = "update client set height='$height',weight = '$weight' where clientuserID = '$userID'";
-                                mysqli_query($conn,$sql);
+                                mysqli_query($conn, $sql);
                                 echo "updated";
-                            }
-                            else{
+                            } else {
                                 echo "error";
-                            }   
+                            }
+                        } else {
+                            $sql = "update weighttracker set height='$height',weight = '$weight',goal = '$goal',bmi = '$bmi' where date = '$date' and clientID = '$userID'";
+                            if (mysqli_query($conn, $sql)) {
+                                $sql = "update client set height='$height',weight = '$weight' where clientuserID = '$userID'";
+                                mysqli_query($conn, $sql);
+                                echo "updated";
+                            } else {
+                                echo "error";
+                            }
                         }
                         ?>
                 <div class="inner21">
@@ -1066,7 +1059,7 @@ height: 45px;
                             <div class="bottom-stats-btn">
                                 <div class="heart_info">
                                     <span>Daily Count</span>
-                                    <span><span><?php echo json_encode((int) $dailyCount[0]-'0');?></span> Kgs</span>
+                                    <span><span><?php echo json_encode((int) $dailyCount[0] - '0'); ?></span> Kgs</span>
                                 </div>
                                 
                             </div>
@@ -1074,7 +1067,7 @@ height: 45px;
                             <div class="bottom-stats-btn">
                                 <div class="heart_info">
                                     <span>Weekly Avg</span>
-                                    <span><span><?php echo json_encode((int) $weeklyCount[0]-'0');?></span> Kgs</span>
+                                    <span><span><?php echo json_encode((int) $weeklyCount[0] - '0'); ?></span> Kgs</span>
                                 </div>
                                 
                             </div>
@@ -1084,7 +1077,7 @@ height: 45px;
                             <div class="bottom-stats-btn">
                                 <div class="heart_info">
                                 <span>Monthly Avg</span>
-                                <span><span><?php echo json_encode((int) $monthlyCount[0]-'0');?></span> Kgs</span>
+                                <span><span><?php echo json_encode((int) $monthlyCount[0] - '0'); ?></span> Kgs</span>
                                 </div>
                                 
                             </div>
@@ -1092,7 +1085,7 @@ height: 45px;
                             <div class="bottom-stats-btn">
                                 <div class="heart_info">
                                 <span>Total</span>
-                                <span><span><?php echo json_encode((int) $totalCount[0]-'0');?></span> Kgs</span>
+                                <span><span><?php echo json_encode((int) $totalCount[0] - '0'); ?></span> Kgs</span>
                                 </div>
                                
                             </div>
@@ -1106,28 +1099,28 @@ height: 45px;
                      <span>Past Activity</span>
                       </div>
                      <?php
-                     $a=1;
-                     
-                    while ($a <= 4) {
-                        
-                     echo ' <div class="table_element">';
-                     echo '<div class="date">';
-                     echo '<span>Sep</span>';
-                     echo ' <p>18</p>';
-                     echo '</div>';
-                     echo '<div class="table_activity">';
-                     echo '<span>Sep</span>';
-                     echo '<p>18</p>';
-                     echo ' </div>';
-                     echo '<div class="table_time">';
-                     echo '   <span>9:10 AM</span>';
-                     echo ' </div>';
-                     echo '</div>';
-                     
-                     $a++;
-                    }
-                     
-                    
+                     $a = 1;
+
+                     while ($a <= 4) {
+
+                         echo ' <div class="table_element">';
+                         echo '<div class="date">';
+                         echo '<span>Sep</span>';
+                         echo ' <p>18</p>';
+                         echo '</div>';
+                         echo '<div class="table_activity">';
+                         echo '<span>Sep</span>';
+                         echo '<p>18</p>';
+                         echo ' </div>';
+                         echo '<div class="table_time">';
+                         echo '   <span>9:10 AM</span>';
+                         echo ' </div>';
+                         echo '</div>';
+
+                         $a++;
+                     }
+
+
                      ?>
                       </div> 
 
@@ -1140,7 +1133,8 @@ height: 45px;
 						<p>View Activity</p>
 					</div>
                 <div class="cpb">
-                    <div role="progressbar" style="--value:<?php $value = 50; echo $value; ?>"></div>
+                    <div role="progressbar" style="--value:<?php $value = 50;
+                    echo $value; ?>"></div>
                 </div>
                 <div class="cpb_bottom">
                         <div class="cpb_bottom_header">Your Progress</div>
@@ -1161,7 +1155,7 @@ height: 45px;
             <div class="activity_pop">
                 
                 <?php
-                   
+
                 ?>
                 <img src="images/exit.svg" alt="">
                     <div class="pop_header">
@@ -1243,10 +1237,10 @@ height: 45px;
 <script>
  var xValues = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];  
  var yValues = [1000, 2000, 3000, 5000, 2000, 5000, 6000];
- var xValuesM = [<?php echo '"'.implode('","',  $monthlydate ).'"' ?>];
-var yValuesM = [<?php echo '"'.implode('","',  $monthlydata ).'"' ?>];
+ var xValuesM = [<?php echo '"' . implode('","', $monthlydate) . '"' ?>];
+var yValuesM = [<?php echo '"' . implode('","', $monthlydata) . '"' ?>];
 var xValuesY = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    var yValuesY = [<?php echo '"'.implode('","',  $yearlydata ).'"' ?>];
+    var yValuesY = [<?php echo '"' . implode('","', $yearlydata) . '"' ?>];
                     new Chart("myChartwater", {
                                 type: "line",
                                 data: {
