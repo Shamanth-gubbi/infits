@@ -1,0 +1,24 @@
+@mixin devices($breakpoint) {
+
+  @if $breakpoint == "largeTablet" {
+    @media only screen and (max-width: 940px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint == "tablet" {
+    @media only screen and (max-width: 680px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint == "mobile" {
+    @media only screen and (max-width: 481px) {
+      @content;
+    }
+  }
+}
+
+@mixin bg(){
+    background-color: black;
+}
