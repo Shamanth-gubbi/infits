@@ -21,15 +21,20 @@
     margin-top: 20px;
   }
 }
-#content .content-container .user-img-container img {
+#content .content-container .user-img-container .profile {
+  background-image: url("../images/profile.png");
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.06));
   border-radius: 20px;
+  height: 200px;
+  width: 200px;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 @media only screen and (max-width: 481px) {
-  #content .content-container .user-img-container img {
-    border: 1px solid red;
+  #content .content-container .user-img-container .profile {
+    background-image: url("../images/mobile-Profile.png");
     border-radius: 50%;
-    transform: scale(1);
+    background-position: center;
   }
 }
 #content .content-container .user-img-container h3 {
