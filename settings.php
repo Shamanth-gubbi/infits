@@ -146,6 +146,7 @@ justify-content: center;
             }).done(function(data){
                 window.location.href = 'index.php';
             }).fail(function() { 
+             
                 alert( "Something went wrong !!" );
             });
       }
