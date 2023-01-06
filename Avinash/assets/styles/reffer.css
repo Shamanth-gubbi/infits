@@ -1,0 +1,116 @@
+#content h1 {
+  margin-left: 30px;
+  margin-top: 10px;
+  font-size: 2rem;
+}
+#content .flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 50px;
+}
+#content .flex-container .refer-code-container {
+  width: 40%;
+  display: flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#content .flex-container .refer-code-container .refer-code-box {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-direction: column;
+}
+#content .flex-container .refer-code-container .refer-code-box p {
+  border: 1px solid #4b9afb;
+  color: #4b9afb;
+  width: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 15px;
+  border-radius: 10px;
+}
+#content .flex-container .refer-code-container .refer-code-box p button {
+  color: #4b9afb;
+  border: none;
+  font-size: 0.8rem;
+  background-color: white;
+}
+#content .flex-container .refer-code-container .refer-code-box button#share {
+  border: none;
+  background-color: #4b9afb;
+  color: white;
+  width: 125px;
+  height: 45px;
+  margin-top: 10px;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+}
+#content .flex-container .friend-list-box {
+  width: 50%;
+  padding: 20px;
+}
+#content .flex-container .friend-list-box .heading-box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+#content .flex-container .friend-list-box .heading-box h3 {
+  font-size: 1.4rem;
+}
+#content .flex-container .friend-list-box ul {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
+  list-style: none;
+  padding: 20px;
+  position: relative;
+  height: 400px;
+  overflow-x: auto;
+}
+#content .flex-container .friend-list-box ul li {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+#content .flex-container .friend-list-box ul li .user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#content .flex-container .friend-list-box ul li .user .para-box {
+  padding-top: 15px;
+  padding-left: 10px;
+}
+#content .flex-container .friend-list-box ul li .user .para-box p {
+  line-height: 2px;
+}
+#content .flex-container .friend-list-box ul li .user .para-box p.company {
+  font-size: 0.7rem;
+  padding-left: 2px;
+}
+#content .flex-container .friend-list-box ul li .status {
+  width: 100px;
+  text-align: center;
+}
+#content .flex-container .friend-list-box ul li .status span {
+  color: #4b9afb;
+}
+#content .flex-container .friend-list-box ul li .status span.accepted {
+  color: #45e945;
+}/*# sourceMappingURL=reffer.css.map */
