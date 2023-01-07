@@ -1,0 +1,94 @@
+#content .first-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 50px 0px 20px;
+}
+#content .first-box .title-box h1 {
+  font-size: 2rem;
+}
+#content .first-box .title-box .filter-box {
+  margin-top: 20px;
+}
+#content .first-box .title-box .filter-box button {
+  border: none;
+  background-color: transparent;
+  border-radius: 0;
+  width: 80px;
+  padding: 5px 10px;
+}
+#content .first-box .title-box .filter-box button:first-child {
+  border-radius: 13.1385px 0px 0px 13.1385px;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 5px 20px;
+}
+#content .first-box .title-box .filter-box button:first-child img {
+  height: 15px;
+  width: 15px;
+  margin-left: 5px;
+}
+#content .first-box .title-box .filter-box button:last-child {
+  border-radius: 0px 13.1385px 13.1385px 0px;
+}
+#content .first-box .title-box .filter-box button.active {
+  background-color: #FF8B8B;
+  color: #ffffff !important;
+}
+#content .activity-containers {
+  padding: 20px 50px 0px 30px;
+  margin: 20px 0px;
+}
+#content .activity-containers h4 {
+  font-size: 1.4rem;
+}
+#content .activity-containers .activities-box {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(310px, 1fr));
+  grid-template-rows: repeat(2, minmax(50px, 70px));
+  gap: 20px;
+  padding-left: 20px;
+  padding-top: 10px;
+}
+#content .activity-containers .activities-box .activities {
+  background: linear-gradient(180deg, rgba(255, 224, 209, 0.2) 0%, rgba(255, 139, 139, 0.2) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+  padding: 0 10px;
+}
+#content .activity-containers .activities-box .activities .details {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#content .activity-containers .activities-box .activities .details img {
+  margin-right: 20px;
+}
+#content .activity-containers .activities-box .activities .details .para-box p {
+  line-height: 12px;
+  margin-top: 15px;
+}
+#content .activity-containers .activities-box .activities .details .para-box p.activity-name {
+  font-size: 25px;
+}
+#content .activity-containers .activities-box .activities .details .para-box p.time {
+  font-size: 17px;
+}
+#content .activity-containers .activities-box .activities .distance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+#content .activity-containers .activities-box .activities .distance img {
+  height: 20px;
+  width: 20px;
+  margin-right: 10px;
+}
+#content .activity-containers .activities-box .activities .distance p.value {
+  font-size: 1.1rem;
+  margin-top: 15px;
+}/*# sourceMappingURL=style.css.map */

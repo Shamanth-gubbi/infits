@@ -1,0 +1,49 @@
+@mixin flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@mixin flex-justify($justify) {
+  display: flex;
+  align-items: center;
+  justify-content: $justify;
+}
+@mixin flex-align($align) {
+  display: flex;
+  align-items: $align;
+  justify-content: center;
+}
+@mixin flex-custom($align, $justify, $direction) {
+  display: flex;
+  align-items: $align;
+  justify-content: $justify;
+  flex-direction: $direction;
+}
+
+
+// For Responsive Screen
+@mixin devices($breakpoint) {
+  @if $breakpoint == "laptop" {
+    @media only screen and (max-width: 1260px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint == "largeTablet" {
+    @media only screen and (max-width: 940px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint == "tablet" {
+    @media only screen and (max-width: 680px) {
+      @content;
+    }
+  }
+
+  @if $breakpoint == "mobile" {
+    @media only screen and (max-width: 481px) {
+      @content;
+    }
+  }
+}
