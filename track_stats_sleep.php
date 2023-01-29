@@ -1283,10 +1283,6 @@ $sleepRemaining = (int) $currentGoal - (int) $sleepConsumed;
                 </div>
             </div>
         </div>
-<script>
-    const progressPercent = document.getElementById('progress-percent');
-    progressPercent.style.setProperty("background", "conic-gradient(#FFE0D1 <?php echo(100 - $progressPercent) ?>% , #FF8B8B 0)");
-</script>
     </div>
 </div>
 <?php
